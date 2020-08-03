@@ -86,14 +86,15 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./lib.js":
-/*!****************!*\
-  !*** ./lib.js ***!
-  \****************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ "./ToyReact.js":
+/*!*********************!*\
+  !*** ./ToyReact.js ***!
+  \*********************/
+/*! exports provided: ToyReact */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-eval("console.log('lib');\n\n//# sourceURL=webpack:///./lib.js?");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ToyReact\", function() { return ToyReact; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar ElementWrapper = /*#__PURE__*/function () {\n  function ElementWrapper(type) {\n    _classCallCheck(this, ElementWrapper);\n\n    this.root = document.createElement(type);\n  }\n\n  _createClass(ElementWrapper, [{\n    key: \"setAttribute\",\n    value: function setAttribute(name, value) {\n      this.root.setAttribute(name, value); //    element.setAttribute(name, attributes[name])\n    }\n  }, {\n    key: \"appendChild\",\n    value: function appendChild(vChild) {\n      vChild.mountTo(this.root);\n    }\n  }, {\n    key: \"mountTo\",\n    value: function mountTo(parent) {\n      parent.appendChild(this.root);\n    }\n  }]);\n\n  return ElementWrapper;\n}();\n\nvar TextWrapper = /*#__PURE__*/function () {\n  function TextWrapper(content) {\n    _classCallCheck(this, TextWrapper);\n\n    this.root = document.createElement(content);\n  }\n\n  _createClass(TextWrapper, [{\n    key: \"appendChild\",\n    value: function appendChild(vChild) {\n      vChild.mountTo(this.root);\n    }\n  }, {\n    key: \"mountTo\",\n    value: function mountTo(parent) {\n      parent.appendChild(this.root);\n    }\n  }]);\n\n  return TextWrapper;\n}();\n\nvar ToyReact = {\n  createElement: function createElement(type, attributes) {\n    var element;\n\n    if (typeof type === 'string') {\n      element = new TextWrapper(type);\n    } else {\n      element = new type();\n    }\n\n    for (var name in attributes) {\n      element.setAttribute(name, attributes[name]);\n    }\n\n    for (var _len = arguments.length, children = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {\n      children[_key - 2] = arguments[_key];\n    }\n\n    for (var _i = 0, _children = children; _i < _children.length; _i++) {\n      var child = _children[_i];\n\n      if (typeof child === 'string') {\n        child = new TextWrapper(child);\n      }\n\n      element.appendChild(child);\n    }\n\n    return element;\n  },\n\n  /**\n   * virtual dom to real dom\n   * @param {ba} vdom \n   * @param {*} element \n   */\n  render: function render(vdom, element) {\n    vdom.mountTo(element);\n  }\n};\n\n//# sourceURL=webpack:///./ToyReact.js?");
 
 /***/ }),
 
@@ -101,10 +102,11 @@ eval("console.log('lib');\n\n//# sourceURL=webpack:///./lib.js?");
 /*!*****************!*\
   !*** ./main.js ***!
   \*****************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-eval("__webpack_require__(/*! ./lib.js */ \"./lib.js\");\n\nconsole.log('main');\n\n//# sourceURL=webpack:///./main.js?");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _ToyReact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ToyReact */ \"./ToyReact.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n\nvar MyComponent = /*#__PURE__*/function () {\n  function MyComponent() {\n    _classCallCheck(this, MyComponent);\n  }\n\n  _createClass(MyComponent, [{\n    key: \"render\",\n    value: function render() {\n      return _ToyReact__WEBPACK_IMPORTED_MODULE_0__[\"ToyReact\"].createElement(\"div\", null, \"cool\");\n    }\n  }, {\n    key: \"setAttribute\",\n    value: function setAttribute(name, value) {\n      this[name] = value;\n    }\n  }, {\n    key: \"mountTo\",\n    value: function mountTo(parent) {\n      var vdom = this.render();\n      vdom.mountTo(parent);\n    }\n  }]);\n\n  return MyComponent;\n}();\n\nvar a = _ToyReact__WEBPACK_IMPORTED_MODULE_0__[\"ToyReact\"].createElement(MyComponent, {\n  name: \"a\",\n  id: \"ida\"\n});\n_ToyReact__WEBPACK_IMPORTED_MODULE_0__[\"ToyReact\"].render(a, document.body); // var a = createElement(MyComponent, {\n//     name: 'a'\n// })\n// let a = <div name=\"a\" id='ids'>\n//     <span>hello world</span>\n//     <span></span>\n//     <span></span>\n// </div>\n// console.log(a);\n// document.body.appendChild(a);\n// var a = ToyReact.createElement(\"div\", {\n//     name: \"a\",\n//     id: \"ids\"\n//   }, \n//   ToyReact.createElement(\"span\", null, \"hello world\"), \n//   ToyReact.createElement(\"span\", null), \n//   ToyReact.createElement(\"span\", null));\n//   console.log(a);\n//   document.body.appendChild(a);\n\n//# sourceURL=webpack:///./main.js?");
 
 /***/ })
 
