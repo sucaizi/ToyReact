@@ -5,13 +5,12 @@ class ElementWrapper {
 
     setAttribute(name, value) {
         this.root.setAttribute(name, value)
-    //    element.setAttribute(name, attributes[name])
     }
 
     appendChild(vChild) {
         vChild.mountTo(this.root)
     }
-    
+
     mountTo(parent) {
         parent.appendChild(this.root)
     }
@@ -19,36 +18,75 @@ class ElementWrapper {
 
 class TextWrapper {
     constructor(content) {
-        this.root = document.createElement(content);
+        this.root = document.createTextNode(content);
     }
-
-    appendChild(vChild) {
-        vChild.mountTo(this.root)
-    } 
-
+    
     mountTo(parent) {
         parent.appendChild(this.root)
     }
 }
 
+export class Component {
+    constructor() {
+        this.children = [];
+    }
+
+    setAttribute(name, value) {
+        this[name] = value;
+    }
+
+    mountTo(parent) {
+        let vdom = this.render();
+        vdom.mountTo(parent);
+    }
+
+    appendChild(vchild) {
+        this.children.push(vchild);
+    }
+}
+
 export let ToyReact = {
-    createElement(type, attributes, ...children){
-        let element; 
-        if(typeof type === 'string') {
-            element = new TextWrapper(type);
+    createElement(type, attributes, ...children) {
+
+        debugger;
+        let element;
+
+        // 创建vdom节点
+        if (typeof type === 'string') {
+            // 标签
+            element = new ElementWrapper(type);
         } else {
+            // 自定义component
             element = new type;
         }
-        for(let name in attributes) {
+
+        // 设置属性
+        for (let name in attributes) {
             element.setAttribute(name, attributes[name])
         }
 
-        for(let child of children) {
-            if(typeof child === 'string') {
-                child = new TextWrapper(child);
+        // 插入子节点
+        let insertChildren = (children) => {
+            for (let child of children) {
+                if (typeof child === 'object' && child instanceof Array) {
+                    insertChildren(child)
+                } else {
+                    if (!(child instanceof Component) 
+                        && !(child instanceof ElementWrapper)
+                        && !(child instanceof TextWrapper)) {
+                        child = String(child);
+                    }
+
+                    if (typeof child === 'string') {
+                        child = new TextWrapper(child);
+                    }
+
+                    element.appendChild(child);
+                }
             }
-            element.appendChild(child);
         }
+
+        insertChildren(children);
         return element;
     },
 
@@ -58,6 +96,6 @@ export let ToyReact = {
      * @param {*} element 
      */
     render(vdom, element) {
-         vdom.mountTo(element)
+        vdom.mountTo(element)
     }
 };
