@@ -20,7 +20,7 @@ class TextWrapper {
     constructor(content) {
         this.root = document.createTextNode(content);
     }
-    
+
     mountTo(parent) {
         parent.appendChild(this.root)
     }
@@ -69,14 +69,17 @@ export let ToyReact = {
         let insertChildren = (children) => {
             for (let child of children) {
                 if (typeof child === 'object' && child instanceof Array) {
+                    // 如果子节点存在子节点，则递归处理子节点
                     insertChildren(child)
                 } else {
                     if (!(child instanceof Component) 
                         && !(child instanceof ElementWrapper)
                         && !(child instanceof TextWrapper)) {
+                        // 正常的标签
                         child = String(child);
                     }
 
+                    // 文本节点
                     if (typeof child === 'string') {
                         child = new TextWrapper(child);
                     }
