@@ -4,6 +4,14 @@ class ElementWrapper {
     }
 
     setAttribute(name, value) {
+        if (name.match(/^on([\s\S]+)$/)) {
+            console.log(RegExp.$1);
+            let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase());
+            this.root.addEventListener(eventName, value);
+        }
+        if (name === 'className') {
+            name = "class";
+        }
         this.root.setAttribute(name, value)
     }
 
@@ -11,8 +19,10 @@ class ElementWrapper {
         vChild.mountTo(this.root)
     }
 
-    mountTo(parent) {
-        parent.appendChild(this.root)
+    mountTo(range) {
+        range.deleteContents();
+        range.insertChildren(this.root);
+        // parent.appendChild(this.root)
     }
 }
 
@@ -29,19 +39,49 @@ class TextWrapper {
 export class Component {
     constructor() {
         this.children = [];
+        this.props = Object.create(null);
     }
 
     setAttribute(name, value) {
+        if (name.match(/^on([\s\S]+)$/)) {
+            console.log(RegExp.$1);
+        }
+        this.props[name] = value;
         this[name] = value;
     }
 
-    mountTo(parent) {
+    mountTo(range) {
+        range.deleteContents();
         let vdom = this.render();
-        vdom.mountTo(parent);
+        vdom.mountTo(range);
+
+        // let range = document.createRange();
+        // range.setStartAfter(parent.lastChild);
+        // range.setEndAfter(parent.lastChild);
     }
 
     appendChild(vchild) {
         this.children.push(vchild);
+    }
+
+    setState(state) {
+        let merge = (oldState, newState) => {
+            for (let p of newState) {
+                if (typeof newState[p] === 'object') {
+                    if (typeof oldState[p] != 'object') {
+                        oldState[p] = {};
+                    }
+                    merge(oldState[p], newState[p]);
+                } else {
+                    oldState[p] = newState[p];
+                }
+            }
+        }
+
+        if (!this.state && state) {
+            this.state = {};
+            merge(this.state, state);
+        }
     }
 }
 
@@ -72,9 +112,9 @@ export let ToyReact = {
                     // 如果子节点存在子节点，则递归处理子节点
                     insertChildren(child)
                 } else {
-                    if (!(child instanceof Component) 
-                        && !(child instanceof ElementWrapper)
-                        && !(child instanceof TextWrapper)) {
+                    if (!(child instanceof Component) &&
+                        !(child instanceof ElementWrapper) &&
+                        !(child instanceof TextWrapper)) {
                         // 正常的标签
                         child = String(child);
                     }
@@ -99,6 +139,12 @@ export let ToyReact = {
      * @param {*} element 
      */
     render(vdom, element) {
+
+        let range = document.createRange();
+        if (element.children.length) {
+            range.setStartAfter(element.children);
+            range.setEndAfter();
+        }
         vdom.mountTo(element)
     }
 };
