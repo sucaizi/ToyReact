@@ -5,7 +5,7 @@ class ElementWrapper {
 
     setAttribute(name, value) {
         if (name.match(/^on([\s\S]+)$/)) {
-            console.log(RegExp.$1);
+            // console.log(RegExp.$1);
             let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase());
             this.root.addEventListener(eventName, value);
         }
@@ -30,7 +30,7 @@ class ElementWrapper {
 
     mountTo(range) {
         range.deleteContents();
-        range.insertChildren(this.root);
+        range.insertNode(this.root);
         // parent.appendChild(this.root)
     }
 }
@@ -42,7 +42,7 @@ class TextWrapper {
 
     mountTo(range) {
         range.deleteContents();
-        range.appendChild(this.root)
+        range.insertNode(this.root)
     }
 }
 
@@ -63,17 +63,13 @@ export class Component {
     mountTo(range) {
         this.range = range;
         this.update();
-
-        // let range = document.createRange();
-        // range.setStartAfter(parent.lastChild);
-        // range.setEndAfter(parent.lastChild);
     }
 
     update() {
 
         let placeholder = document.createComment("placeholder");
         let range = document.createRange();
-        range.setStart(this.range.endContainer, this.reange.endOffset);
+        range.setStart(this.range.endContainer, this.range.endOffset);
         range.setEnd(this.range.endContainer, this.range.endOffset);
         range.insertNode(placeholder);
 
@@ -89,7 +85,7 @@ export class Component {
 
     setState(state) {
         let merge = (oldState, newState) => {
-            for (let p of newState) {
+            for (let p in newState) {
                 if (typeof newState[p] === 'object') {
                     if (typeof oldState[p] != 'object') {
                         oldState[p] = {};
@@ -112,7 +108,7 @@ export class Component {
 export let ToyReact = {
     createElement(type, attributes, ...children) {
 
-        debugger;
+        // debugger;
         let element;
 
         // 创建vdom节点
