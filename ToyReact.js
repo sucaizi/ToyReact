@@ -16,7 +16,16 @@ class ElementWrapper {
     }
 
     appendChild(vChild) {
-        vChild.mountTo(this.root)
+        let range = document.createRange();
+        if (this.root.children.length) {
+            range.setStartAfter(this.root.lastChild);
+            range.setEndAfter(this.root.lastChild);
+        } else {
+            range.setStart(this.root, 0);
+            range.setEnd(this.root, 0);
+
+        }
+        vChild.mountTo(range)
     }
 
     mountTo(range) {
@@ -31,8 +40,9 @@ class TextWrapper {
         this.root = document.createTextNode(content);
     }
 
-    mountTo(parent) {
-        parent.appendChild(this.root)
+    mountTo(range) {
+        range.deleteContents();
+        range.appendChild(this.root)
     }
 }
 
@@ -51,13 +61,26 @@ export class Component {
     }
 
     mountTo(range) {
-        range.deleteContents();
-        let vdom = this.render();
-        vdom.mountTo(range);
+        this.range = range;
+        this.update();
 
         // let range = document.createRange();
         // range.setStartAfter(parent.lastChild);
         // range.setEndAfter(parent.lastChild);
+    }
+
+    update() {
+
+        let placeholder = document.createComment("placeholder");
+        let range = document.createRange();
+        range.setStart(this.range.endContainer, this.reange.endOffset);
+        range.setEnd(this.range.endContainer, this.range.endOffset);
+        range.insertNode(placeholder);
+
+        this.range.deleteContents();
+        let vdom = this.render();
+        vdom.mountTo(this.range);
+
     }
 
     appendChild(vchild) {
@@ -80,8 +103,9 @@ export class Component {
 
         if (!this.state && state) {
             this.state = {};
-            merge(this.state, state);
         }
+        merge(this.state, state);
+        this.update();
     }
 }
 
@@ -142,9 +166,12 @@ export let ToyReact = {
 
         let range = document.createRange();
         if (element.children.length) {
-            range.setStartAfter(element.children);
-            range.setEndAfter();
+            range.setStartAfter(element.lastChild);
+            range.setEndAfter(element.lastChild);
+        } else {
+            range.setStart(element, 0);
+            range.setEnd(element, 0);
         }
-        vdom.mountTo(element)
+        vdom.mountTo(range)
     }
 };
