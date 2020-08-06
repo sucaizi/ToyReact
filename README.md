@@ -23,7 +23,7 @@ plugins: 插件的范围包括，从打包优化和压缩；
 
 我们要知道JSX语法的本质并不是直接把JSX渲染到页面，而是在内部先转换成了createElement 形式，然后再去渲染的，同时JSX在进行编译成JavaScript代码的时候进行了一定的优化，所以执行效率也更高。
 
-下面举例看一下JSX语法的解析方式。
+下面举例看一下JSX语法的解析方式.
 
 首先要在React环境里，先要预装上babel 和我们要用到的插件：
 
@@ -44,7 +44,7 @@ plugins: [["@babel/plugin-transform-React-jsx{pragma:"ToyReact.createElement" },
 转化之后代码: 
 
 ```
-ToyReact.createElement.createElement("div", "123");
+ToyReact.createElement("div", "123");
 ```
 
 再看一组例子：
@@ -53,20 +53,20 @@ JSX代码：
 
 ```
 <div>     
-<div></div>    
-<div></div>     
-<div></div> 
+    <div></div>    
+    <div></div>     
+    <div></div> 
 </div> 
 
 ```
 转化之后代码: 
 ```
 React.createElement(     
-"div",     
-{},     
-React.createElement("div", {}, ...chidren),     
-React.createElement("div", {}, ...chidren),     
-React.createElement("div", {}, ...chidren) 
+    "div",     
+    {},     
+    React.createElement("div", {}, ...children),     
+    React.createElement("div", {}, ...children),     
+    React.createElement("div", {}, ...children) 
 )
 ```
 
@@ -83,18 +83,18 @@ React.createElement("div", {}, ...chidren)
 
 理解这个问题前，先了解下React的生命周期函数：
 
-组件将要挂载时触发的函数：componentWillMount
-组件挂载完成时触发的函数：componentDidMount
-是否要更新数据时触发的函数：shouldComponentUpdate
-将要更新数据时触发的函数：componentWillUpdate
-数据更新完成时触发的函数：componentDidUpdate
-组件将要销毁时触发的函数：componentWillUnmount
-父组件中改变了props传值时触发的函数：componentWillReceiveProps
+- 组件将要挂载时触发的函数：componentWillMount
+- 组件挂载完成时触发的函数：componentDidMount
+- 是否要更新数据时触发的函数：shouldComponentUpdate
+- 将要更新数据时触发的函数：componentWillUpdate
+- 数据更新完成时触发的函数：componentDidUpdate
+- 组件将要销毁时触发的函数：componentWillUnmount
+- 父组件中改变了props传值时触发的函数：componentWillReceiveProps
 
 
 这里重点说一下在组件挂载之前的操作和在更新的时候的操作；componentWillMount和componentWillUpdate在每一个组件render之前都会去调用componentWillMount()，可以在服务端调用也可以在浏览器端调用，如果有异步请求，是不推荐在这个时候去请求数据的，具体原因是在render之前是不会返回数据的，这个坑大家了解一下；在组件将要更新数据的时候都会触发一次componentWillUpdate()，执行更新操作。
 
-回归到我们的课程上面 ，在我们的class里面有mountTo() 和 update()这样两个函数，不妨来猜测下它们的作用。和React本身的生命周期对应起来就是在挂载之前需要的操作和更新的时候需要的操作。那么在挂载之前做了什么：通过setAttribute添加自定义的属性，addEventListener添加事件；然后就会执行一次render；如果有更新操作，就会在update()内会通过对比对更新的元素进行替换；再次render。
+回归到我们的课程上面，在我们的class里面有mountTo() 和 update()这样两个函数，不妨来猜测下它们的作用。和React本身的生命周期对应起来就是在挂载之前需要的操作和更新的时候需要的操作。那么在挂载之前做了什么：通过setAttribute添加自定义的属性，addEventListener添加事件；然后就会执行一次render；如果有更新操作，就会在update()内会通过对比对更新的元素进行替换；再次render。
 
 ### 4、Range对象的简单了解和使用 ###
 
@@ -124,4 +124,5 @@ https://www.infoq.cn/article/PetYpJPvl4X1qsYde4Jd
 virtual DOM
 
 https://www.infoq.cn/article/2iviqjklwa4JkF0YNQGZ
+
 https://www.infoq.cn/article/AiQMbjI0oXZ1UrueiBze
