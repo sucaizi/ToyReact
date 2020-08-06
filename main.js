@@ -178,10 +178,13 @@ class Square extends Component {
   
   // ========================================
   
-  ToyReact.render(
-    <Game />,
-    document.body
-  );
+let game = <Game/>
+console.log(game.vdom);
+
+//   ToyReact.render(
+    // <Game />,
+    // document.body
+//   );
   
   function calculateWinner(squares) {
     const lines = [

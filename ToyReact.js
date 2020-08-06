@@ -1,26 +1,45 @@
+let childrenSymbol = Symbol('children');
+
 class ElementWrapper {
     constructor(type) {
         this.type = type;
         this.props = Object.create(null);
-        this.children = [];
+        this[childrenSymbol] = [];
+        this.children = []
     }
 
     setAttribute(name, value) {
         this.props[name] = value;
     }
 
+    get children() {
+        return this[childrenSymbol].map(child => child.vdom);
+    }
+
     appendChild(vChild) {
-        this.children.push(vChild);
+        this[childrenSymbol].push(vchild)
+        this.children.push(vChild.vdom);
+    }
+
+    get vdom() {
+        return this;
     }
 
     mountTo(range) {
 
-        this.reange = range;
+        this.range = range;
+        
+        let placeholder = document.createComment("placeholder");
+        let endRange = document.createRange();
+        endRange.setStart(range.endContainer, range.endOffset);
+        endRange.setEnd(range.endContainer, range.endOffset);
+        endRange.insertNode(placeholder);
+
         range.deleteContents();
         let element = document.createElement(this.type);
 
         // 设置属性
-        for(let name in this.props) {
+        for (let name in this.props) {
             let value = this.props[name];
 
             if (name.match(/^on([\s\S]+)$/)) {
@@ -34,7 +53,7 @@ class ElementWrapper {
         }
 
         // 设置子节点
-        for(let child of this.children) {
+        for (let child of this.children) {
             let range = document.createRange();
             if (element.children.length) {
                 range.setStartAfter(element.lastChild);
@@ -72,13 +91,13 @@ export class Component {
         this.props = Object.create(null);
     }
 
-    get type(){
+    get type() {
         return this.constructor.name;
     }
 
     setAttribute(name, value) {
         if (name.match(/^on([\s\S]+)$/)) {
-            console.log(RegExp.$1);
+            // console.log(RegExp.$1);
         }
         this.props[name] = value;
         this[name] = value;
@@ -90,44 +109,44 @@ export class Component {
     }
 
     update() {
-        let vdom = this.render();
-        if(this.vdom) {
+        let vdom = this.vdom;
+        if (this.oldVdom) {
             let isSameNode = (node1, node2) => {
-                if(node1.type !== node2.type) {
+                if (node1.type !== node2.type) {
                     return false;
                 }
-                for(let name in node1.props) {
-                    if(typeof node1.props[name] === 'function' 
-                        && typeof node2.props[name] === 'function'
-                        && node1.props[name].toString() === node2.props[name].toString() ) {
-                            continue;
-                    }
-                    if(typeof node1.props[name] === 'object' 
-                        && typeof node2.props[name] === 'object'
-                        && JSON.stringify(node1.props[name]) === JSON.stringify(node2.props[name])) {
+                for (let name in node1.props) {
+                    if (typeof node1.props[name] === 'function' &&
+                        typeof node2.props[name] === 'function' &&
+                        node1.props[name].toString() === node2.props[name].toString()) {
                         continue;
-                    } 
-                    if(node1.props[name] !== node2.props[name]) {
+                    }
+                    if (typeof node1.props[name] === 'object' &&
+                        typeof node2.props[name] === 'object' &&
+                        JSON.stringify(node1.props[name]) === JSON.stringify(node2.props[name])) {
+                        continue;
+                    }
+                    if (node1.props[name] !== node2.props[name]) {
                         return false;
                     }
                 }
 
-                if(Object.keys(node1.props).length != Object.keys(node2.props)) {
+                if (Object.keys(node1.props).length != Object.keys(node2.props)) {
                     return false;
                 }
                 return true;
             }
 
             let isSameTree = (node1, node2) => {
-                if(!isSameNode(node1, node2)) {
+                if (!isSameNode(node1, node2)) {
                     return false;
                 }
-                if(node1.children.length !== node2.children.length) {
+                if (node1.children.length !== node2.children.length) {
                     return false;
                 }
 
-                for(let i = 0; i < node1.children; i++) {
-                    if(!isSameTree(node1.children[i], node2.children[i])) {
+                for (let i = 0; i < node1.children; i++) {
+                    if (!isSameTree(node1.children[i], node2.children[i])) {
                         return false;
                     }
                 }
@@ -135,20 +154,20 @@ export class Component {
             }
 
             let replace = (newTree, oldTree) => {
-                if(isSameTree(newTree, oldTree)) {
+                if (isSameTree(newTree, oldTree)) {
                     return;
                 }
 
-                if(!isSameNode(newTree, oldTree)) {
+                if (!isSameNode(newTree, oldTree)) {
                     newTree.mountTo(oldTree.range);
                 } else {
-    
-                    for(let i = 0; i < newTree.children.length; i++) {
+
+                    for (let i = 0; i < newTree.children.length; i++) {
                         replace(newTreee.children[i], oldTree.children[i]);
                     }
                 }
             };
-            replace(vdom, this.vdom);
+            replace(vdom, this.oldVdom);
 
             console.log("new", vdom);
             console.log("old", this.vdom);
@@ -156,7 +175,12 @@ export class Component {
             vdom.mountTo(this.range);
         }
 
-        this.vdom = vdom;
+        this.oldVdom = vdom;
+    }
+
+    get vdom() {
+        return this.render().vdom;
+
     }
 
     appendChild(vchild) {
@@ -168,7 +192,7 @@ export class Component {
             for (let p in newState) {
                 if (typeof newState[p] === 'object' && newState[p] !== null) {
                     if (typeof oldState[p] != 'object') {
-                        if(newState[p] instanceof Array) {
+                        if (newState[p] instanceof Array) {
                             oldState[p] = [];
                         } else {
                             oldState[p] = {};
